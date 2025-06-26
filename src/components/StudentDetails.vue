@@ -1,7 +1,9 @@
 <template>
+  <!-- 学生详情页面 -->
   <div class="student-details">
     <h2>Student Details</h2>
     <template v-if="student">
+      <!-- 展示学生基本信息 -->
       <p>Name: {{ student.name }}</p>
       <p>Email: {{ student.email }}</p>
       <p>Gender: {{ student.gender }}</p>
@@ -23,17 +25,18 @@
 </template>
 
 <script>
-import api from '../utils/api..js';
+import api from '../utils/api..js'; // 导入自定义 api 工具
 
 export default {
   data() {
     return {
-      student: null,
-      newPassword: '',
-      confirmPassword: '',
+      student: null, // 当前学生信息
+      newPassword: '', // 新密码
+      confirmPassword: '', // 确认新密码
     };
   },
   async mounted() {
+    // 页面加载时获取学生详情
     try {
       const token = this.$store.getters.getToken || localStorage.getItem('token');
       const res = await api.get('/student/detail/', {
@@ -47,6 +50,7 @@ export default {
     }
   },
   methods: {
+    // 修改密码方法
     changePassword() {
       if (this.newPassword !== this.confirmPassword) {
         alert('Passwords do not match!');
@@ -60,6 +64,7 @@ export default {
 </script>
 
 <style scoped>
+/* 学生详情卡片样式 */
 .student-details {
   max-width: 420px;
   margin: 0 auto;
@@ -103,7 +108,7 @@ export default {
   border-color: #6366f1;
   outline: none;
 }
-.password-form button[type='submit'] {
+.password-form button[type="submit"] {
   background: #6366f1;
   color: #fff;
   border: none;
@@ -115,7 +120,7 @@ export default {
   width: 100%;
   transition: background 0.2s;
 }
-.password-form button[type='submit']:hover {
+.password-form button[type="submit"]:hover {
   background: #4f46e5;
 }
 </style>

@@ -1,4 +1,5 @@
 <template>
+  <!-- 角色列表页面 -->
   <div class="role-list">
     <h2>Role List</h2>
     <div class="table-wrapper">
@@ -11,9 +12,11 @@
           </tr>
         </thead>
         <tbody>
+          <!-- 遍历角色数据渲染表格 -->
           <tr v-for="role in roles" :key="role.id">
             <td>{{ role.name }}</td>
             <td>
+              <!-- 权限名映射显示 -->
               {{ Array.isArray(role.permissions) ? role.permissions.map(pid => {
                 const p = permissions.find(per => per.id === pid);
                 return p ? p.name : pid;
@@ -29,7 +32,7 @@
     </div>
     <button @click="showAddForm = true">Add Role</button>
 
-    <!-- Add/Edit Form -->
+    <!-- 新增/编辑角色表单 -->
     <div v-if="showAddForm">
       <form @submit.prevent="addOrEditRole">
         <div>
@@ -58,23 +61,24 @@
 </template>
 
 <script>
-import api from '../utils/api..js';
+import api from '../utils/api..js'; // 导入自定义 api 工具
 
 export default {
   data() {
     return {
-      roles: [],
-      permissions: [],
+      roles: [], // 角色列表
+      permissions: [], // 权限列表
       formData: {
-        name: '',
-        permission_ids: [],
+        name: '', // 角色名
+        permission_ids: [], // 选中的权限id数组
       },
-      showAddForm: false,
-      editing: false,
-      currentId: null,
+      showAddForm: false, // 是否显示表单
+      editing: false, // 是否编辑状态
+      currentId: null, // 当前编辑的角色id
     };
   },
   async mounted() {
+    // 页面加载时获取角色和权限列表
     try {
       await this.fetchRoles();
     } catch (e) {
@@ -91,6 +95,7 @@ export default {
     }
   },
   methods: {
+    // 获取角色列表
     async fetchRoles() {
       const token = this.$store.getters.getToken || localStorage.getItem('token');
       try {
@@ -103,6 +108,7 @@ export default {
         console.error(e);
       }
     },
+    // 获取权限列表
     async fetchPermissions() {
       const token = this.$store.getters.getToken || localStorage.getItem('token');
       try {
@@ -115,6 +121,7 @@ export default {
         console.error(e);
       }
     },
+    // 编辑角色
     editRole(role) {
       this.showAddForm = true;
       this.editing = true;
@@ -126,13 +133,13 @@ export default {
       } else if (role.permissions !== undefined && role.permissions !== null) {
         ids = [String(role.permissions)];
       }
-      // 类型保护，防止被覆盖
       if (!Array.isArray(ids)) ids = [];
       this.formData = {
         name: role.name,
         permission_ids: ids,
       };
     },
+    // 删除角色
     async deleteRole(id) {
       const token = this.$store.getters.getToken || localStorage.getItem('token');
       try {
@@ -145,19 +152,21 @@ export default {
         console.error(e);
       }
     },
+    // 取消表单
     cancelForm() {
       this.showAddForm = false;
       this.editing = false;
       this.currentId = null;
       this.resetFormData();
     },
+    // 重置表单
     resetFormData() {
-      // 初始化时也强制为数组
       this.formData = {
         name: '',
         permission_ids: [],
       };
     },
+    // 新增或编辑角色
     async addOrEditRole() {
       const token = this.$store.getters.getToken || localStorage.getItem('token');
       const url = this.editing ? `/roles/${this.currentId}/` : '/roles/create/';
@@ -187,6 +196,7 @@ export default {
         console.error(e);
       }
     },
+    // 权限单击选中/取消
     togglePermission(id) {
       id = String(id);
       const idx = this.formData.permission_ids.indexOf(id);
@@ -201,6 +211,7 @@ export default {
 </script>
 
 <style scoped>
+/* 角色列表卡片样式 */
 .role-list {
   max-width: 800px;
   margin: 0 auto;

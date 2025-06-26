@@ -1,16 +1,20 @@
 <template>
+  <!-- 权限列表页面 -->
   <div class="permission-list">
     <h2>Permission List</h2>
     <table>
       <thead>
         <tr>
+          <th>ID</th>
           <th>Name</th>
           <th>Code</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
+        <!-- 遍历权限数据渲染表格 -->
         <tr v-for="permission in permissions" :key="permission.id">
+          <td>{{ permission.id }}</td>
           <td>{{ permission.name }}</td>
           <td>{{ permission.code }}</td>
           <td>
@@ -41,12 +45,12 @@
 </template>
 
 <script>
-import api from '../utils/api..js';
+import api from '../utils/api..js'; // 导入自定义 api 工具
 
 export default {
   data() {
     return {
-      permissions: [],
+      permissions: [], // 权限列表数据
       formData: {
         name: '',
         code: '',
@@ -57,25 +61,18 @@ export default {
     };
   },
   async mounted() {
+    // 页面加载时获取权限列表
+    const token = this.$store.getters.getToken || localStorage.getItem('token');
     try {
-      await this.fetchPermissions();
+      const res = await api.get('/permissions/', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      this.permissions = res.data.data.permissions;
     } catch (e) {
-      console.error('权限列表加载失败', e);
+      alert('获取权限列表失败：' + (e.response?.data?.detail || e.message || e));
     }
   },
   methods: {
-    async fetchPermissions() {
-      const token = this.$store.getters.getToken || localStorage.getItem('token');
-      try {
-        const res = await api.get('/permissions/', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        this.permissions = res.data.data.permissions;
-      } catch (e) {
-        alert('获取权限列表失败');
-        console.error(e);
-      }
-    },
     async addOrEditPermission() {
       const token = this.$store.getters.getToken || localStorage.getItem('token');
       const url = this.editing ? `/permissions/${this.currentId}/` : '/permissions/create/';
@@ -125,6 +122,7 @@ export default {
 </script>
 
 <style scoped>
+/* 权限列表表格样式 */
 .permission-list {
   max-width: 800px;
   margin: 0 auto;

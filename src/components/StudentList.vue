@@ -123,12 +123,12 @@ export default {
       students: [], // 学生列表数据
       roles: [], // 角色列表数据
       newStudent: {
-        name: '',
-        password: '',
-        email: '',
-        gender: 'M',
-        mobile: '',
-        role: '',
+        name: '', // 学生姓名
+        password: '', // 密码
+        email: '', // 邮箱
+        gender: 'M', // 性别
+        mobile: '', // 手机号
+        role: '', // 角色id
       },
       showAddForm: false, // 是否显示新增表单
       // 编辑相关
