@@ -205,19 +205,30 @@ export default {
     // 点击编辑按钮，弹出编辑表单
     editStudent(student) {
       this.editStudentData = { ...student };
-      // role 字段兼容 role/role_id/roles
-      this.editStudentData.role = student.role || student.role_id || (Array.isArray(student.roles) ? student.roles[0] : '');
+      // 优先从 roles 数组取第一个角色id，否则取 role/role_id，全部转为数字，保证下拉框可正常选中
+      let roleId = '';
+      if (Array.isArray(student.roles) && student.roles.length) {
+        roleId = Number(student.roles[0]);
+      } else if (student.role) {
+        roleId = Number(student.role);
+      } else if (student.role_id) {
+        roleId = Number(student.role_id);
+      }
+      this.editStudentData.role = roleId;
       this.showEditForm = true;
     },
     // 保存编辑后的学生信息
     async saveEditStudent() {
       const token = this.$store.getters.getToken || localStorage.getItem('token');
       try {
-        const payload = { ...this.editStudentData };
-        payload.role = Number(payload.role);
-        payload.role_id = payload.role; // 兼容后端不同字段
-        // 如后端要求 roles 为数组，也一并传递
-        payload.roles = [payload.role];
+        // 只传后端需要的字段，roles 必须为数组
+        const payload = {
+          name: this.editStudentData.name, // 学生姓名
+          email: this.editStudentData.email, // 邮箱
+          gender: this.editStudentData.gender, // 性别
+          mobile: this.editStudentData.mobile, // 手机号
+          roles: [Number(this.editStudentData.role)], // 只传 roles，类型为数组，元素为数字
+        };
         await api.put(`/students/${this.editStudentData.id}/`, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
